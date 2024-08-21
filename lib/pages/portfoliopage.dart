@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
-// Define the Project class
+// Project class
 class Project {
   final String name;
   final String description;
@@ -24,7 +24,7 @@ class Project {
   });
 }
 
-// Sample project data
+// project data
 List<Project> projects = [
   Project(
     name: 'Alpha Project',
@@ -108,7 +108,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Portfolio App',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.blueGrey,
       ),
       home: PortfolioPage(),
     );
@@ -327,6 +327,7 @@ class ProjectDetailPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(project.name),
+        backgroundColor: Colors.blueGrey,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(8.0),

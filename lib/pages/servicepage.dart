@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
 class ServicePage extends StatefulWidget {
@@ -32,7 +33,7 @@ class _ServicePageState extends State<ServicePage> {
   ];
 
   final List<Promotion> promotions = [
-    Promotion( 
+    Promotion(
       image: 'lib/images/SMM.jpg',
       title: 'Social Media Marketing',
       subtitle:
@@ -54,6 +55,21 @@ class _ServicePageState extends State<ServicePage> {
     ),
   ];
 
+  final List<Testimonial> testimonials = [
+    Testimonial(
+      customerName: 'Prachiti Gupta',
+      feedback: 'Amazing service! Highly recommended.',
+    ),
+    Testimonial(
+      customerName: 'Riya Sharma',
+      feedback: 'Great experience with the team, very professional.',
+    ),
+    Testimonial(
+      customerName: 'Priyanshu Gupta',
+      feedback: 'Fantastic results, exceeded my expectations!',
+    ),
+  ];
+
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -66,10 +82,10 @@ class _ServicePageState extends State<ServicePage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Service Page'),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.blueGrey,
       ),
       body: SingleChildScrollView(
-        child: Column( 
+        child: Column(
           children: [
             const Center(
               child: Text(
@@ -94,7 +110,6 @@ class _ServicePageState extends State<ServicePage> {
                   subtitle: Text(services[index].subtitle),
                   trailing: Text(services[index].price),
                 );
-                
               },
             ),
             const SizedBox(height: 20),
@@ -123,7 +138,59 @@ class _ServicePageState extends State<ServicePage> {
                 );
               },
             ),
+            const SizedBox(height: 25),
+
+            // Customer Testimonials 
+            const Center(
+              child: Text(
+                'C U S T O M E R  T E S T I M O N I A L S',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+            ),
             const SizedBox(height: 20),
+            CarouselSlider.builder(
+              itemCount: testimonials.length,
+              itemBuilder: (context, index, realIndex) {
+                final testimonial = testimonials[index];
+                return Container(
+                  width: MediaQuery.of(context).size.width,
+                  margin: const EdgeInsets.symmetric(horizontal: 5),
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    children: [
+                      const Icon(Icons.person, size: 50),
+                      const SizedBox(height: 10),
+                      Text(
+                        testimonial.customerName,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        testimonial.feedback,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                );
+              },
+              options: CarouselOptions(
+                height: 200,
+                autoPlay: true,
+                enlargeCenterPage: true,
+                aspectRatio: 16 / 9,
+                viewportFraction: 0.8,
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Enquiry Form Section
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: Form(
@@ -253,4 +320,20 @@ class Promotion {
     required this.subtitle,
     required this.price,
   });
+}
+
+class Testimonial {
+  final String customerName;
+  final String feedback;
+
+  Testimonial({
+    required this.customerName,
+    required this.feedback,
+  });
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: ServicePage(),
+  ));
 }

@@ -3,12 +3,12 @@ import 'package:flutter/widgets.dart';
 
 class MyButton extends StatefulWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback onTap;
 
   const MyButton({
     super.key,
     required this.text,
-    required this.onPressed,
+    required this.onTap,
   });
 
   @override
@@ -20,7 +20,7 @@ class _MyButtonState extends State<MyButton> {
   Widget build(BuildContext context) {
     return ElevatedButton(
       
-      onPressed: widget.onPressed,
+      onPressed: widget.onTap,
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.all(20),
         shadowColor: Colors.blueGrey,

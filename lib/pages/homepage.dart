@@ -1,8 +1,8 @@
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:internship_project/pages/portfoliopage.dart';
 import 'package:internship_project/pages/servicepage.dart';
-// import 'package:internship_project/components/searchbar.dart'; // Uncomment if the SearchBar component is available
+import 'package:internship_project/pages/userlogin.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,13 +13,17 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final List<String> imagePath = [
-    "lib/images/totoro.jpg",
-    "lib/images/Tiny-Tan.jpg",
-    "lib/images/bts1.jpg",
-    "lib/images/tinytans.jpg",
+    "lib/images/photoshoot.jpg",
+    "lib/images/production.jpg",
+    "lib/images/musicp.jpg",
+    "lib/images/food.png",
   ];
 
   late List<Widget> _pages;
+
+  //User details
+  String userName = 'Anushka Bhardwaj';
+  String userEmail = 'ab@mail.com';
 
   @override
   void initState() {
@@ -28,15 +32,32 @@ class _HomePageState extends State<HomePage> {
       imagePath.length,
       (index) => ImagePlaceholder(imagePath: imagePath[index]),
     );
+
+    // TODO: Load the actual user data here
+    // For example, you could load this data from a user profile service or Firebase
+    // setState(() {
+    //   userName = fetchedUserName;
+    //   userEmail = fetchedUserEmail;
+    //   userImageUrl = fetchedUserImageUrl;
+    // });
+  }
+
+  // Sign out function
+  void onSignOut() {
+
+    // Navigate to the login page
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const LoginPage(onTap: () {  },)), //ERROR
+      (Route<dynamic> route) => false,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.blueGrey,
         title: const Center(
           child: Image(
             image: AssetImage('lib/images/2.png'),
@@ -57,20 +78,25 @@ class _HomePageState extends State<HomePage> {
         actions: [
           IconButton(
             onPressed: () {
-              // Uncomment the following line if the SearchBar component is available
               Navigator.of(context).push(MaterialPageRoute(builder: (context) => const SearchBar()));
             },
             icon: const Icon(Icons.search, color: Colors.black),
           ),
-          IconButton(
-            onPressed: () {
-              // Handle user profile or other action
+          Builder(
+            builder: (BuildContext context) {
+              return IconButton(
+                onPressed: () {
+                  Scaffold.of(context).openEndDrawer();
+                },
+                icon: const Icon(Icons.person, color: Colors.black),
+              );
             },
-            icon: const Icon(Icons.person, color: Colors.black),
           ),
         ],
         centerTitle: true,
       ),
+
+      // DRAWER
       drawer: Drawer(
         child: Container(
           color: Colors.white,
@@ -79,16 +105,7 @@ class _HomePageState extends State<HomePage> {
               const DrawerHeader(
                 child: Image(image: AssetImage('lib/images/1.png')),
                 decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  
-                  /*gradient: LinearGradient(
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomLeft,
-                    colors: [
-                      Colors.blue,
-                      Colors.red,
-                    ],
-                  )*/
+                  color: Colors.blueGrey,
                 ),
               ),
               ListTile(
@@ -128,37 +145,114 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: CarouselSlider(
-              items: _pages.map((page) {
-                return Builder(
-                  builder: (BuildContext context) {
-                    return Container(
-                      width: MediaQuery.of(context).size.width,
-                      margin: const EdgeInsets.symmetric(horizontal: 7),
-                      child: page,
-                    );
-                  },
-                );
-              }).toList(),
-              options: CarouselOptions(height: 500),
+
+      // END-DRAWER with dynamic user details
+      endDrawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            UserAccountsDrawerHeader(
+              accountName: Text(userName),
+              accountEmail: Text(userEmail),
+              currentAccountPicture: CircleAvatar(
+                backgroundImage: NetworkImage('https://via.placeholder.com/150'),
+              ),
+              decoration: const BoxDecoration(
+                color: Colors.blueGrey,
+              ),
             ),
-          ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (BuildContext context, int index) {
-                return Container(
-                  height: 300,
-                  color: Colors.white,
-                  margin: const EdgeInsets.symmetric(vertical: 10),
-                );
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Profile'),
+              onTap: () {
+                Navigator.pop(context);
               },
-              childCount: 6,
             ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Settings'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Logout'),
+              onTap: onSignOut,
+            ),
+          ],
+        ),
+      ),
+      body: Scrollbar(
+        thumbVisibility: true,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CarouselSlider(
+                items: _pages.map((page) {
+                  return Builder(
+                    builder: (BuildContext context) {
+                      return Container(
+                        width: MediaQuery.of(context).size.width,
+                        margin: const EdgeInsets.symmetric(horizontal: 7),
+                        child: page,
+                      );
+                    },
+                  );
+                }).toList(),
+                options: CarouselOptions(height: 400),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Center(
+                      child: Text(
+                        'About Us',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Center(
+                      child: Text(
+                        'Welcome to Kooperate!',
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Center(
+                      child: Text(
+                        'We are dedicated to providing the best services to help you achieve your goals. '
+                            'Our team is made up of experienced professionals who are passionate about what they do. '
+                            'We specialize in Photoshoots, Music Productions and Many more, and our mission is to ABCD. '
+                            'Feel free to explore our website and learn more about what we have to offer.',
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Center(
+                      child: Text(
+                        'Feel free to explore our website and learn more about what we have to offer.',
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

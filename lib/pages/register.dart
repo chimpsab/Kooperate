@@ -14,39 +14,62 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
 
   void signUserUp() async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
 
-    showDialog(context: context, builder: (context) {
-      return Center(child: CircularProgressIndicator(),);
-    });
     // Creating a user account
     try {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: emailController.text,
-      password: passwordController.text,
-      );
+      if (passwordController.text == confirmPasswordController.text) {
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: emailController.text,
+          password: passwordController.text,
+        );
+      } else {
+        // Throw error message
+        showErrorMessage("Passwords don't match");
+      }
 
-      //loading popup
-      Navigator.pop(context); 
-
-
+      // Close loading popup
+      Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
+      Navigator.pop(context); // Close loading popup
+
       if (e.code == 'user-not-found') {
-        //print('Wrong Email');
+        // Print 'Wrong Email'
         wrongEmailMessage();
-
-      }
-      if(e.code == 'password-not-found') {
-        //print('Wrong Password');
+      } else if (e.code == 'wrong-password') {
+        // Print 'Wrong Password'
         wrongPasswordMessage();
+      } else {
+        // Show general error message
+        showErrorMessage(e.message ?? "An error occurred");
       }
-
     }
-      
   }
 
-  //wrong email messsage popup
+  // Error message popup
+  void showErrorMessage(String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Error'),
+          content: Text(message),
+        );
+      },
+    );
+  }
+
+  // Wrong email message popup
   void wrongEmailMessage() {
     showDialog(
       context: context,
@@ -55,11 +78,11 @@ class _RegisterPageState extends State<RegisterPage> {
           title: Text('Incorrect Email'),
         );
       },
-      );
+    );
   }
 
-  //wrong password message popup
-   void wrongPasswordMessage() {
+  // Wrong password message popup
+  void wrongPasswordMessage() {
     showDialog(
       context: context,
       builder: (context) {
@@ -67,7 +90,7 @@ class _RegisterPageState extends State<RegisterPage> {
           title: Text('Incorrect Password'),
         );
       },
-      );
+    );
   }
 
   @override
@@ -97,7 +120,6 @@ class _RegisterPageState extends State<RegisterPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 50),
-      
                 // Logo
                 const Icon(
                   Icons.person,
@@ -105,9 +127,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   color: Color.fromARGB(255, 1, 1, 20),
                 ),
                 //Image.asset('lib/images/1.png', height: 100,width: 100,),
-                
                 const SizedBox(height: 50), // Empty space between the elements
-      
                 // Text
                 Text(
                   'Signin / Signup',
@@ -117,14 +137,12 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
                 const SizedBox(height: 25),
-      
                 // Username
                 LoginTextField(
                   controller: emailController,
                   hintText: 'E-mail',
                   obscureText: false,
                 ),
-      
                 const SizedBox(height: 10),
                 // Password
                 LoginTextField(
@@ -132,35 +150,14 @@ class _RegisterPageState extends State<RegisterPage> {
                   hintText: 'Password',
                   obscureText: true,
                 ),
-      
                 const SizedBox(height: 5),
-
-                //confirm password
+                // Confirm password
                 LoginTextField(
-                  controller: passwordController,
-                  hintText: 'Comfirm Password',
+                  controller: confirmPasswordController,
+                  hintText: 'Confirm Password',
                   obscureText: true,
                 ),
-      
-                const SizedBox(height: 5),
-      
-
-                // forgot password?
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        'Forgot Password?',
-                        style: TextStyle(color: Colors.grey[700]),
-                      ),
-                    ],
-                  ),
-                ),
-      
                 const SizedBox(height: 25),
-      
                 // Button
                 GestureDetector(
                   onTap: signUserUp,
@@ -173,7 +170,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     child: const Center(
                       child: Text(
-                        "Sign In",
+                        "Sign Up",
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -183,9 +180,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                 ),
-      
                 const SizedBox(height: 50),
-      
                 // Or continue with
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -213,25 +208,20 @@ class _RegisterPageState extends State<RegisterPage> {
                     ],
                   ),
                 ),
-      
                 const SizedBox(height: 20),
-      
                 // Social login logos
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     // Google
                     SquareTile(imagePath: 'lib/images/google.jpg.png'),
-      
                     // Facebook
                     SquareTile(imagePath: 'lib/images/facebook.png'),
-      
                     // Apple
                     SquareTile(imagePath: 'lib/images/apple.png'),
                   ],
                 ),
                 const SizedBox(height: 20),
-      
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
